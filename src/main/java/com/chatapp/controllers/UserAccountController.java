@@ -38,6 +38,15 @@ public class UserAccountController {
         }
     }
 
+    @GetMapping("/{id}/username")
+    public ResponseEntity<?> getUsernameById(@PathVariable int id) {
+        if (userAccountService.getUserAccountById(id).isPresent()) {
+            return ResponseEntity.ok(userAccountService.getUserAccountById(id).get().getUsername());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or @userSecurity.isCurrentUser(#id)")
     public ResponseEntity<?> updateUserAccount(@Valid @RequestBody UserAccount newUserAccount, @PathVariable int id) {
