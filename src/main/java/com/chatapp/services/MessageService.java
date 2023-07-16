@@ -3,6 +3,7 @@ package com.chatapp.services;
 import com.chatapp.models.Message;
 import com.chatapp.repositories.MessageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 
@@ -15,6 +16,9 @@ public class MessageService {
 
     @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     public List<Message> getMessages() {
         return messageRepository.findAll();
@@ -30,6 +34,7 @@ public class MessageService {
 
     public Message addMessage(Message message) {
         Message newMessage = new Message(message.getConversationId(), message.getSenderId(), message.getContent());
+        simpMessagingTemplate.convertAndSend("/topic/messages" + message.getConversationId(), newMessage); // Publish to the "/topic/messages" topic
         return messageRepository.save(newMessage);
     }
 
